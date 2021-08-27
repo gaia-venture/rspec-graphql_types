@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rspec-graphql_types (1.0.1)
+    rspec-graphql_types (1.0.2)
       activesupport
       graphql
 
