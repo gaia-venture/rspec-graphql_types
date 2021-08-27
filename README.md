@@ -9,7 +9,9 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rspec-graphql_types'
+group :development, :test do
+  gem 'rspec-graphql_types'
+end
 ```
 
 And then execute:
@@ -22,7 +24,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Add the following to your rails_helper.rb
+
+```ruby
+RSpec.configure do |config|
+  config.include Rspec::GraphQLTypes, type: :graphql_type
+end
+```
+
+Then you can write tests as follows
+
+```ruby
+RSpec.describe Types::MyType, type: :graphql_type do
+  it "does something awesome" do
+    object = graphql_object(Types::MyTypes, {passed: in})
+    expect(graphql_field(object, :field_name, arg1: value1, arg2: value2)).to eq("The Result")
+  end
+end
+```
 
 ## Development
 
