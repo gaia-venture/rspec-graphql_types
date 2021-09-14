@@ -40,6 +40,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  x86_64-darwin-20
 
 DEPENDENCIES
   rake (~> 13.0)
