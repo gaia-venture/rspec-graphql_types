@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    rspec-graphql_types (1.0.2)
+    rspec-graphql_types (1.0.3)
       activesupport
       graphql
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.4)
+    activesupport (6.1.4.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -16,7 +16,7 @@ GEM
       zeitwerk (~> 2.3)
     concurrent-ruby (1.1.9)
     diff-lcs (1.4.4)
-    graphql (1.12.14)
+    graphql (1.12.16)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     minitest (5.14.4)
