@@ -16,6 +16,10 @@ module Rspec
       def multiplex
         nil
       end
+
+      def warden
+        @warden
+      end
     end
 
     included do
@@ -36,6 +40,8 @@ module Rspec
         type.coerce_result(value, context)
       when 'LIST'
         value.map { |v| graphql_object(type.of_type, v) }
+      when 'ENUM'
+        type.coerce_result(value, context)
       else
         raise "Unknown type kind #{type.kind.name}"
       end
