@@ -9,3 +9,4 @@
 
 # rspec failure tracking
 .rspec_status
+rspec-graphql_types.iml

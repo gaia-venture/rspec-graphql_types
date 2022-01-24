@@ -71,7 +71,7 @@ module Rspec
     end
 
     def self.schema_class
-      schemas = GraphQL::Schema.subclasses
+      schemas = GraphQL::Schema.subclasses.filter { |schema| !schema.name.start_with?("GraphQL::") }
       raise "Could not find valid schema. Please ensure that GraphQL::Schema.subclasses returns a single schema" unless schemas.length == 1
       schemas.first
     end
