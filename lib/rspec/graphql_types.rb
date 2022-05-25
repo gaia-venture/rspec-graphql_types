@@ -23,7 +23,8 @@ module Rspec
     end
 
     included do
-      let(:context) { GraphQL::Query::Context.new(query: TestQuery.new, values: nil, object: nil, schema: GraphQLTypes.schema_class.new) }
+      let(:context_values) { nil }
+      let(:context) { GraphQL::Query::Context.new(query: TestQuery.new, values: context_values, object: nil, schema: GraphQLTypes.schema_class.new) }
     end
 
     def graphql_object(type, value)
