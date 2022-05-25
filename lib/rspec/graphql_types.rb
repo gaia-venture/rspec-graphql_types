@@ -56,6 +56,7 @@ module Rspec
       value = context.dataloader.run_isolated do
         graphql_field.resolve(object, arguments, context)
       end
+      raise value if value.is_a?(Exception)
       graphql_object(graphql_field.type, value)
     end
 
