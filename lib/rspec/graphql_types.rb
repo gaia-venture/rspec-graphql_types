@@ -8,7 +8,7 @@ module Rspec
   module GraphQLTypes
     extend ActiveSupport::Concern
 
-    class TestQuery < GraphQL::Query::NullContext::NullQuery
+    class TestQuery < ::GraphQL::Query::NullContext::NullQuery
       def trace(_key, _data)
         yield
       end
@@ -24,7 +24,8 @@ module Rspec
 
     included do
       let(:context_values) { nil }
-      let(:context) { GraphQL::Query::Context.new(query: TestQuery.new, values: context_values, object: nil, schema: GraphQLTypes.schema_class.new) }
+      let(:schema) { ::GraphQL::VERSION.start_with?("1") ? GraphQLTypes.schema_class.new : GraphQLTypes.schema_class }
+      let(:context) { ::GraphQL::Query::Context.new(query: TestQuery.new, values: context_values, object: nil, schema: schema) }
     end
 
     def graphql_object(type, value)
@@ -73,7 +74,7 @@ module Rspec
     end
 
     def self.schema_class
-      schemas = GraphQL::Schema.subclasses.filter { |schema| !schema.name.start_with?("GraphQL::") }
+      schemas = ::GraphQL::Schema.subclasses.filter { |schema| !schema.name.start_with?("GraphQL::") }
       raise "Could not find valid schema. Please ensure that GraphQL::Schema.subclasses returns a single schema" unless schemas.length == 1
       schemas.first
     end
