@@ -9,23 +9,43 @@ module Rspec
     extend ActiveSupport::Concern
 
     class TestQuery < ::GraphQL::Query::NullContext::NullQuery
+      attr_reader :context, :schema, :multiplex
+
+      def initialize(context:, schema:)
+        super()
+        @context = context
+        @schema = schema
+        @multiplex = false
+      end
+
       def trace(_key, _data)
         yield
       end
 
-      def multiplex
-        nil
+      def handle_or_reraise(err)
+        schema.handle_or_reraise(context, err)
       end
 
       def warden
-        @warden
+        @warden ||= ::GraphQL::Query::NullContext::NullWarden.new(
+          ::GraphQL::Filter.new,
+          context: context,
+          schema: schema
+        )
       end
     end
 
     included do
       let(:context_values) { nil }
       let(:schema) { ::GraphQL::VERSION.start_with?("1") ? GraphQLTypes.schema_class.new : GraphQLTypes.schema_class }
-      let(:context) { ::GraphQL::Query::Context.new(query: TestQuery.new, values: context_values, object: nil, schema: schema) }
+      let(:context) {
+        ::GraphQL::Query::Context.new(
+          query: TestQuery.new(context: self, schema: schema),
+          values: context_values,
+          object: nil,
+          schema: schema
+        )
+      }
     end
 
     def graphql_object(type, value)
@@ -74,7 +94,9 @@ module Rspec
     end
 
     def self.schema_class
-      schemas = ::GraphQL::Schema.subclasses.filter { |schema| !schema.name.start_with?("GraphQL::") }
+      schemas = ::GraphQL::Schema.subclasses
+                                 .filter { |schema| !schema.name.start_with?("GraphQL::") }
+                                 .filter { |schema| !schema.name.ends_with?("::SCHEMA") }
       raise "Could not find valid schema. Please ensure that GraphQL::Schema.subclasses returns a single schema" unless schemas.length == 1
       schemas.first
     end
