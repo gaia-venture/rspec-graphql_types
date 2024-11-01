@@ -48,6 +48,18 @@ module Rspec
       }
     end
 
+    class Configuration
+      attr_accessor :graphql_schema
+    end
+
+    def self.configuration
+      @configuration ||= Configuration.new
+    end
+
+    def self.configure
+      yield configuration
+    end
+
     def graphql_object(type, value)
       if value.nil?
         raise "Received a nil value for #{type}" if type.non_null?
@@ -94,11 +106,17 @@ module Rspec
     end
 
     def self.schema_class
-      schemas = ::GraphQL::Schema.subclasses
-                                 .filter { |schema| !schema.name.start_with?("GraphQL::") }
-                                 .filter { |schema| !schema.name.ends_with?("::SCHEMA") }
-      raise "Could not find valid schema. Please ensure that GraphQL::Schema.subclasses returns a single schema" unless schemas.length == 1
+      return configuration.graphql_schema if configuration.graphql_schema
+
+      schemas = find_graphql_schema
+      raise "Could not find valid schema. Found: #{schemas.join(", ")} Use Rspec::GraphQLTypes.configure to specify the correct schema" unless schemas.length == 1
       schemas.first
+    end
+
+    def self.find_graphql_schema
+      ::GraphQL::Schema.subclasses
+                       .filter { |schema| !schema.name&.start_with?("GraphQL::") }
+                       .filter { |schema| !schema.name&.ends_with?("::SCHEMA") }
     end
   end
 end
