@@ -8,11 +8,11 @@ module Rspec
   module GraphQLTypes
     extend ActiveSupport::Concern
 
-    class TestQuery < ::GraphQL::Query::NullContext::NullQuery
+    class TestQuery < ::GraphQL::Query
       attr_reader :context, :schema, :multiplex
 
       def initialize(context:, schema:)
-        super()
+        super(schema, context: context)
         @context = context
         @schema = schema
         @multiplex = false
@@ -27,7 +27,7 @@ module Rspec
       end
 
       def warden
-        @warden ||= ::GraphQL::Query::NullContext::NullWarden.new(
+        @warden ||= ::GraphQL::Schema::Warden.new(
           ::GraphQL::Filter.new,
           context: context,
           schema: schema
@@ -40,7 +40,7 @@ module Rspec
       let(:schema) { ::GraphQL::VERSION.start_with?("1") ? GraphQLTypes.schema_class.new : GraphQLTypes.schema_class }
       let(:context) {
         ::GraphQL::Query::Context.new(
-          query: TestQuery.new(context: self, schema: schema),
+          query: TestQuery.new(context: GraphQL::Query::Context.new(query: nil, values: {}, object: nil, schema: schema), schema: schema),
           values: context_values,
           object: nil,
           schema: schema
@@ -116,7 +116,7 @@ module Rspec
     def self.find_graphql_schema
       ::GraphQL::Schema.subclasses
                        .filter { |schema| !schema.name&.start_with?("GraphQL::") }
-                       .filter { |schema| !schema.name&.ends_with?("::SCHEMA") }
+                       .filter { |schema| !schema.name&.end_with?("::SCHEMA") }
     end
   end
 end
