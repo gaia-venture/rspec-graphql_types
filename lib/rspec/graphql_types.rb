@@ -76,6 +76,9 @@ module Rspec
         value.map { |v| graphql_object(type.of_type, v) }
       when 'ENUM'
         type.coerce_result(value, context)
+      when 'INTERFACE'
+        subtype = type.resolve_type(value, context)
+        graphql_object(subtype, value)
       else
         raise "Unknown type kind #{type.kind.name}"
       end
